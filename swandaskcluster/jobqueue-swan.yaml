@@ -1,0 +1,9 @@
+jobqueue:
+  swan:
+    # Use SWAN image as worker image
+    worker-image: '/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.15.4'
+
+    # HTCondor job flags
+    job-extra:
+      'getenv': 'True'
+      '+JobFlavour': '"tomorrow"'
