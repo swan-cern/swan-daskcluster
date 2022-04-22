@@ -1,9 +1,10 @@
 
 import os
 
-from swanportallocator.portallocator import PortAllocatorClient
+from swanportallocator.portallocator import PortAllocatorClient, NoPortsException, GeneralException
 
-class SchedulerConfig:
+
+class DaskSchedulerConfig:
     '''
     Helper class that provides information that is relevant for a Dask
     scheduler running in a SWAN user session, namely:
@@ -21,6 +22,7 @@ class SchedulerConfig:
         Initializes a client of the SwanPortAllocator extension.
         '''
         self._port_allocator = PortAllocatorClient()
+        self._port_allocator.connect()
 
     def get_private_hostname(self):
         '''
@@ -40,7 +42,6 @@ class SchedulerConfig:
         '''
         Requests and returns a free port for the scheduler to use.
         '''
-        self._port_allocator.connect()
         return self._port_allocator.get_ports(1)[0]
 
     def reserve_port(self):
