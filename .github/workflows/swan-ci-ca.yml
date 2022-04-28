@@ -27,7 +27,6 @@ jobs:
         echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
         echo "PACKAGE_VERSION=$(echo $PACKAGE_TAG | cut -d / -f 2)" >> $GITHUB_ENV
 
-        cd $PACKAGE_NAME
         if [ -f 'package.json' ]; then
           echo "PACKAGE_JSON=$(echo 1)" >> $GITHUB_ENV
         fi
@@ -45,12 +44,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd $PACKAGE_NAME
         pip install build twine
 
     - name: Build wheel
       run: |
-        cd $PACKAGE_NAME
         python -m build
 
     - name: Publish distribution to PyPI
@@ -58,7 +55,6 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
       run: |
-        cd $PACKAGE_NAME
         twine upload --repository pypi dist/*
 
     - name: Create Release
