@@ -29,6 +29,10 @@ setup_args = dict(
     ],
     zip_safe=False,
     include_package_data=True,
+    package_data={
+        # Include yaml with default args for SwanHTCondorCluster
+        "swandaskcluster": ["*.yaml"],
+    },
     python_requires=">=3.6",
     license="AGPL-3.0",
     platforms="Linux, Mac OS X, Windows",
