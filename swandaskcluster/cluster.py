@@ -43,7 +43,6 @@ class SwanHTCondorCluster(CernCluster):
         protocol = protocol or 'tls://'
         security = security or self.security()
 
-
         # Worker configuration
 
         worker_image = worker_image or \
@@ -108,8 +107,8 @@ class SwanHTCondorCluster(CernCluster):
             print('certificate_exists')
         else:
             os.system(
-                'openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout ' + str(CA_FILE) + ' -out ' + str(
-                    CERT_FILE) + ' -subj "/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=yourdomain.com"')
+                'openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout ' + str(CERT_FILE) + ' -out ' + str(
+                    CA_FILE) + ' -subj "/C=US/ST=Utah/L=Lehi/O=Your Company, Inc./OU=IT/CN=yourdomain.com"')
 
     @classmethod
     def security(cls):
@@ -119,18 +118,16 @@ class SwanHTCondorCluster(CernCluster):
         """
            Should we generate the certificate when the security is called? .
         """
-
         cls.check_and_generate_certificate()
-
         ca_file = str(CA_FILE)
         cert_file = str(CERT_FILE)
         return Security(
             tls_ca_file=ca_file,
-            tls_worker_cert=cert_file,
+            tls_worker_cert=ca_file,
             tls_worker_key=cert_file,
-            tls_client_cert=cert_file,
+            tls_client_cert=ca_file,
             tls_client_key=cert_file,
-            tls_scheduler_cert=cert_file,
+            tls_scheduler_cert=ca_file,
             tls_scheduler_key=cert_file,
             require_encryption=True,
         )
