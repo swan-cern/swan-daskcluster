@@ -78,7 +78,7 @@ class SwanHTCondorCluster(CernCluster):
         # TODO: set a value for 'log_directory'
 
         # Security
-        security = self._get_security()
+        security = self.security()
         if security is None:
             raise SwanDaskClusterException(
                 'Error when creating a SwanHTCondorCluster: could not '
@@ -129,7 +129,8 @@ class SwanHTCondorCluster(CernCluster):
         # The scheduler was successfully created, we can keep the port
         self._scheduler_config.reserve_port()
 
-    def _get_security(self):
+    @classmethod
+    def security(cls):
         '''
         Constructs and returns a Dask Security object if a directory with
         pregenerated certificates is found. Otherwise it logs an error and
