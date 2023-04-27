@@ -57,7 +57,6 @@ class SwanHTCondorCluster(CernCluster):
     job_cls = SwanHTCondorJob
 
     def __init__(self,
-                 worker_image = None,
                  job_extra = {},
                  scheduler_options = {},
                  **base_class_kwargs):
@@ -68,9 +67,14 @@ class SwanHTCondorCluster(CernCluster):
         '''
 
         # Worker configuration
-        worker_image = worker_image or \
-                       dask.config.get(
+        worker_image = dask.config.get(
                            f'jobqueue.{self.config_name}.worker-image')
+        tag = os.getenv('VERSION_DOCKER_IMAGE', None)
+        if tag is None:
+            raise SwanDaskClusterException(
+                'Error when creating a SwanHTCondorCluster: could not '
+                'find the tag to be used for the worker image')
+        worker_image += f':{tag}'
 
         config_job_extra = dask.config.get(
                                f'jobqueue.{self.config_name}.job-extra')
