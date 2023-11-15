@@ -44,14 +44,14 @@ class DaskSchedulerConfig:
         '''
         return self._port_allocator.get_ports(1)[0]
 
-    def reserve_port(self):
-        '''
-        Reserves a previously requested port.
-        '''
-        self._port_allocator.set_connected()
-
-    def release_port(self):
+    def release_port(self, port):
         '''
         Releases a previously requested port.
         '''
-        self._port_allocator.set_disconnected()
+        self._port_allocator.release_ports([port])
+
+    def set_connected(self):
+        '''
+        Announces that the current process is connected to an assigned port.
+        '''
+        self._port_allocator.set_connected()

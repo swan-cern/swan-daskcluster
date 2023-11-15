@@ -126,12 +126,13 @@ class SwanHTCondorCluster(CernCluster):
             # Some exception was raised in any of the cluster superclasses.
             # Release the port so that it can be given to other processes and
             # re-raise from the original exception.
-            self._scheduler_config.release_port()
+            self._scheduler_config.release_port(port)
             raise SwanDaskClusterException(
                 'Error when creating a SwanHTCondorCluster') from e
 
-        # The scheduler was successfully created, we can keep the port
-        self._scheduler_config.reserve_port()
+        # The scheduler was successfully created and listens on the port
+        self._scheduler_config.set_connected()
+        self._port = port
 
     @classmethod
     def security(cls):
@@ -170,6 +171,17 @@ class SwanHTCondorCluster(CernCluster):
             tls_scheduler_key=server_key,
             require_encryption=True,
         )
+
+    async def close(self, timeout = None):
+        '''
+        Releases the port assigned to the scheduler.
+        '''
+
+        # Do the superclass' cleanup
+        await super().close(timeout)
+
+        # If the cleanup went well, release the scheduler port
+        self._scheduler_config.release_port(self._port)
 
     def _get_tls_job_extra(self, security):
         '''
