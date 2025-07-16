@@ -8,7 +8,7 @@ from dask_lxplus.cluster import CernJob
 import dask
 from distributed.security import Security
 
-import os, logging
+import os, sys, logging
 
 # Logging
 log = logging.getLogger('swan-daskcluster')
@@ -121,6 +121,7 @@ class SwanHTCondorCluster(CernCluster):
                              scheduler_options = scheduler_options,
                              security = security,
                              protocol = f'{protocol}://',
+                             python=sys.executable,
                              **base_class_kwargs)
         except Exception as e:
             # Some exception was raised in any of the cluster superclasses.
