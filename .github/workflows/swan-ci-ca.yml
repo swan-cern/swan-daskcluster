@@ -10,15 +10,17 @@ on:
 
 jobs:
   build-publish:
-
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # To push to PyPI
+      contents: write  # To create a release
 
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Set environnment package name  and version
+    - name: Set environment package name and version
       run: |
         PACKAGE_TAG=${GITHUB_REF#refs/*/}
         PACKAGE_NAME=$(echo $PACKAGE_TAG | cut -d / -f 1)
@@ -36,7 +38,6 @@ jobs:
         EXT_LOWERCASE=$(echo $PACKAGE_NAME | tr '[:upper:]' '[:lower:]')
         git --no-pager log $PREV_TAG HEAD --pretty=format:"- %B" -- $PACKAGE_NAME | sed -r "s/($EXT_LOWERCASE|$PACKAGE_NAME): //g" | sed -r "s/\*/  \*/g" > /tmp/release_body.md
 
-
     - name: Install Python
       uses: actions/setup-python@v2
       with:
@@ -50,12 +51,8 @@ jobs:
       run: |
         python -m build
 
-    - name: Publish distribution to PyPI
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        twine upload --repository pypi dist/*
+    - name: Publish distribution to PyPI 🚀
+      uses: pypa/gh-action-pypi-publish@release/v1
 
     - name: Create Release
       id: create_release
