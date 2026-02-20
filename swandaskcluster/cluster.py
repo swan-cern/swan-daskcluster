@@ -2,13 +2,14 @@
 from . import config
 from .utils import DaskSchedulerConfig, NoPortsException, GeneralException
 
+import dask_jobqueue
 from dask_lxplus import CernCluster
 from dask_lxplus.cluster import CernJob
 
 import dask
 from distributed.security import Security
 
-import os, logging
+import os, sys, logging
 
 # Logging
 log = logging.getLogger('swan-daskcluster')
@@ -114,6 +115,10 @@ class SwanHTCondorCluster(CernCluster):
         scheduler_options['contact_address'] = f'{protocol}://{contact_hostname}:{port}'
 
         try:
+            # Include worker_command only if current dask_jobqueue version supports it
+            if dask_jobqueue.__version__ >= '0.9.0':
+                base_class_kwargs['worker_command'] = 'distributed.cli.dask_worker'
+
             super().__init__(worker_image = worker_image,
                              job_extra = { **config_job_extra,
                                            **job_extra,
@@ -121,6 +126,7 @@ class SwanHTCondorCluster(CernCluster):
                              scheduler_options = scheduler_options,
                              security = security,
                              protocol = f'{protocol}://',
+                             python=sys.executable,
                              **base_class_kwargs)
         except Exception as e:
             # Some exception was raised in any of the cluster superclasses.
