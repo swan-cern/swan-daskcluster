@@ -45,7 +45,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install build twine
+        pip install build
 
     - name: Build wheel
       run: |
